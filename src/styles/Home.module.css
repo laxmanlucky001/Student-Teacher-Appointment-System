@@ -1,0 +1,21 @@
+.home {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .roleNav {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+  }
+  
+  .roleLink {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+  }
+  
+  

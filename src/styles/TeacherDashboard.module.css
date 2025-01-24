@@ -1,0 +1,22 @@
+.teacherDashboard {
+    padding: 20px;
+  }
+  
+  .appointments {
+    margin-top: 20px;
+  }
+  
+  .appointmentList {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .appointmentItem {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  

@@ -1,0 +1,88 @@
+.header {
+    background-color: #4a90e2;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .logo a {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-decoration: none;
+  }
+  
+  .nav {
+    flex-grow: 1;
+    margin: 0 2rem;
+  }
+  
+  .navList {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .navLink {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .navLink:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .userActions {
+    display: flex;
+    align-items: center;
+  }
+  
+  .userEmail {
+    color: white;
+    margin-right: 1rem;
+  }
+  
+  .logoutButton,
+  .authLink {
+    background-color: white;
+    color: #4a90e2;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+  
+  .logoutButton:hover,
+  .authLink:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .authLink {
+    margin-left: 1rem;
+  }
+  
+  @media (max-width: 768px) {
+    .header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .nav {
+      margin: 1rem 0;
+    }
+  
+    .userActions {
+      margin-top: 1rem;
+      align-self: flex-end;
+    }
+  }
+  
+  
