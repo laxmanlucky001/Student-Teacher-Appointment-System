@@ -20,10 +20,11 @@ const Register = () => {
     try {
       await signup(name, email, password, role)
       toast.success("Account created successfully")
-      navigate("/")
+      // Redirect to the appropriate dashboard based on role
+      navigate(`/${role}`)
     } catch (error) {
-      toast.error("Failed to create an account")
-      console.error(error)
+      toast.error(error.message || "Failed to create an account")
+      console.error("Registration error:", error)
     }
   }
 

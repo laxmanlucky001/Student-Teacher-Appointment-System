@@ -3,18 +3,34 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_API_KEY,
-  authDomain: import.meta.env.VITE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_APP_ID,
-  measurementId: import.meta.env.VITE_MEASUREMENT_ID,
+  apiKey: "AIzaSyDtU1xcIkePU-4FWwemDKhyobvfIZn7Mpo",
+  authDomain: "student-teacher-appointm-be560.firebaseapp.com",
+  projectId: "student-teacher-appointm-be560",
+  storageBucket: "student-teacher-appointm-be560.appspot.com",
+  messagingSenderId: "273004934125",
+  appId: "1:273004934125:web:eb045b8fddbd2b39f5ede4",
+  measurementId: "G-Z8WHH384KW"
 };
 
-const app = initializeApp(firebaseConfig);
+console.log('Initializing Firebase with config:', firebaseConfig);
 
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+let app;
+try {
+    // Initialize Firebase
+    app = initializeApp(firebaseConfig);
+    console.log('Firebase app initialized successfully');
+} catch (error) {
+    console.error('Error initializing Firebase:', error);
+    throw error;
+}
 
+// Initialize Firebase Authentication and get a reference to the service
+const auth = getAuth(app);
+console.log('Auth initialized:', auth ? 'success' : 'failed');
+
+// Initialize Cloud Firestore and get a reference to the service
+const db = getFirestore(app);
+console.log('Firestore initialized:', db ? 'success' : 'failed');
+
+export { auth, db };
 export default app;

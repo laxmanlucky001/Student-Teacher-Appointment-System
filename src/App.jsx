@@ -1,7 +1,9 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom"
 import { useAuth } from "./contexts/AuthContext"
 import { Toaster } from "react-hot-toast"
+import { getAuth, signInAnonymously } from "firebase/auth"
+import { auth } from "./services/firebase"
 import Header from "./components/Header"
 import LandingPage from "./pages/LandingPage"
 import StudentDashboard from "./pages/StudentDashboard"
@@ -26,8 +28,36 @@ function PrivateRoute({ children, allowedRoles }) {
 }
 
 function App() {
-  const { currentUser } = useAuth()
+  const { currentUser, loading } = useAuth()
+  console.log('App render - loading:', loading, 'currentUser:', currentUser ? 'exists' : 'null');
 
+  useEffect(() => {
+    // Test Firebase connection
+    const testConnection = async () => {
+      try {
+        console.log('Testing Firebase connection...');
+        await signInAnonymously(auth);
+        console.log('Firebase connection successful');
+      } catch (error) {
+        console.error('Firebase connection error:', error);
+      }
+    };
+    
+    testConnection();
+  }, []);
+
+  // Show loading spinner while authentication state is being determined
+  if (loading) {
+    console.log('Showing loading spinner');
+    return (
+      <div className="min-h-screen bg-gray-100 flex justify-center items-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <p className="ml-4 text-gray-600">Loading...</p>
+      </div>
+    )
+  }
+
+  console.log('Rendering main app content');
   return (
     <Router>
       <div className="min-h-screen bg-gray-100">
@@ -71,4 +101,3 @@ function App() {
 }
 
 export default App
-

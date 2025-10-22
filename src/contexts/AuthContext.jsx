@@ -20,22 +20,54 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   async function signup(name, email, password, role) {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-    await setDoc(doc(db, "users", userCredential.user.uid), {
-      name,
-      email,
-      role,
-      approved: role === "student" ? true : false,
-    })
-    return userCredential
+    try {
+      console.log('Starting signup process...');
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      console.log('User created successfully:', userCredential.user.uid);
+      
+      const userData = {
+        name,
+        email,
+        role,
+        approved: role === "student" ? true : false,
+      };
+      
+      await setDoc(doc(db, "users", userCredential.user.uid), userData);
+      console.log('User document created in Firestore');
+      
+      // Set the current user with combined auth and custom data
+      setCurrentUser({ ...userCredential.user, ...userData });
+      
+      return userCredential;
+    } catch (error) {
+      console.error('Signup error:', error.code, error.message);
+      throw error;
+    }
   }
 
   async function login(email, password) {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password)
-    const userDoc = await getDoc(doc(db, "users", userCredential.user.uid))
-    const userData = userDoc.data()
-    setCurrentUser({ ...userCredential.user, ...userData })
-    return userCredential
+    try {
+      console.log('Attempting login for', email);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
+      if (!userDoc.exists()) {
+        console.error('No user document found for this user.');
+        setCurrentUser(userCredential.user);
+        return userCredential;
+      }
+      const userData = userDoc.data();
+      if (!userData.role) {
+        console.error('User document missing role field:', userData);
+      }
+      if (userData.role === 'teacher' && userData.approved === false) {
+        console.warn('Teacher account not approved yet.');
+      }
+      setCurrentUser({ ...userCredential.user, ...userData });
+      return userCredential;
+    } catch (error) {
+      console.error('Login error:', error.code, error.message);
+      throw error;
+    }
   }
 
   function logout() {
@@ -47,30 +79,57 @@ export function AuthProvider({ children }) {
   }
 
   useEffect(() => {
+    console.log('Setting up auth state listener...');
+    
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const docRef = doc(db, "users", user.uid)
-        const docSnap = await getDoc(docRef)
-        if (docSnap.exists()) {
-          setCurrentUser({ ...user, ...docSnap.data() })
+      console.log('Auth state changed:', user ? `User ${user.uid} logged in` : 'No user');
+      
+      try {
+        if (user) {
+          const docRef = doc(db, "users", user.uid);
+          console.log('Fetching user data from Firestore...');
+          
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const userData = docSnap.data();
+            console.log('User data found:', userData);
+            setCurrentUser({ ...user, ...userData });
+          } else {
+            console.log('No user data found in Firestore');
+            setCurrentUser(user);
+          }
+        } else {
+          console.log('Setting current user to null');
+          setCurrentUser(null);
         }
-      } else {
-        setCurrentUser(null)
+      } catch (error) {
+        console.error('Error in auth state listener:', error);
+        setCurrentUser(null);
+      } finally {
+        console.log('Setting loading to false');
+        setLoading(false);
       }
-      setLoading(false)
-    })
+    });
 
-    return unsubscribe
-  }, [])
+    return () => {
+      console.log('Cleaning up auth state listener');
+      unsubscribe();
+    };
+  }, []);
 
   const value = {
     currentUser,
+    loading,
     signup,
     login,
     logout,
     resetPassword,
   }
 
-  return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  )
 }
 
